@@ -1,0 +1,113 @@
+{% extends 'AppCritique/base.html' %}
+
+{% block title %}
+Abonnements
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+
+    <!-- TITRE -->
+    <h1 class="text-4xl font-bold text-gray-800 mb-10">
+        Abonnements
+    </h1>
+
+    <!-- FORMULAIRE -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
+
+        <h2 class="text-2xl font-semibold mb-6">
+            Suivre un utilisateur
+        </h2>
+
+        <form method="POST" class="flex flex-col md:flex-row gap-4">
+
+            {% csrf_token %}
+
+            <input
+                type="text"
+                name="followed_user"
+                placeholder="Nom d'utilisateur"
+                class="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+            >
+
+            <button
+                type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition duration-200"
+            >
+                Suivre
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- ABONNEMENTS -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
+
+        <h2 class="text-2xl font-semibold mb-6">
+            Utilisateurs suivis
+        </h2>
+
+        {% for follow in follows %}
+
+        <div class="flex justify-between items-center border-b border-gray-200 py-4">
+
+            <div>
+
+                <p class="font-medium text-gray-800">
+                    {{ follow.followed_user.username }}
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'unfollow_user' follow.id %}"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200"
+            >
+                Désabonner
+            </a>
+
+        </div>
+
+        {% empty %}
+
+        <p class="text-gray-500">
+            Vous ne suivez encore aucun utilisateur.
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- ABONNÉS -->
+    <div class="bg-white rounded-2xl shadow-md p-6">
+
+        <h2 class="text-2xl font-semibold mb-6">
+            Vos abonnés
+        </h2>
+
+        {% for follower in followers %}
+
+        <div class="border-b border-gray-200 py-4">
+
+            <p class="font-medium text-gray-800">
+                {{ follower.user.username }}
+            </p>
+
+        </div>
+
+        {% empty %}
+
+        <p class="text-gray-500">
+            Aucun abonné pour le moment.
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

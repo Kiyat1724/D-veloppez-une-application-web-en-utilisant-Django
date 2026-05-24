@@ -1,0 +1,32 @@
+{% extends 'AppCritique/base.html' %}
+
+{% block title %}
+Connexion
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-md mx-auto bg-white p-8 rounded shadow">
+
+    <h1 class="text-2xl font-bold mb-6">
+        Connexion
+    </h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button
+            type="submit"
+            class="bg-blue-600 text-black px-4 py-2 rounded"
+        >
+            Se connecter
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
