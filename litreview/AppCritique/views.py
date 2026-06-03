@@ -79,6 +79,50 @@ def logout_view(request):
 # ======================================================
 
 
+# @login_required
+# def feed(request):
+
+#     followed_users = UserFollows.objects.filter(
+#         user=request.user
+#     ).values_list(
+#         'followed_user',
+#         flat=True
+#     )
+
+#     tickets = Ticket.objects.filter(
+#         user__in=followed_users
+#     )
+
+#     reviews = Review.objects.filter(
+#         user__in=followed_users
+#     )
+
+#     tickets = tickets.annotate(
+#         content_type=Value(
+#             'TICKET',
+#             CharField()
+#         )
+#     )
+
+#     reviews = reviews.annotate(
+#         content_type=Value(
+#             'REVIEW',
+#             CharField()
+#         )
+#     )
+
+#     posts = sorted(
+#         chain(tickets, reviews),
+#         key=lambda post: post.time_created,
+#         reverse=True
+#     )
+
+#     return render(
+#         request,
+#         'AppCritique/feed.html',
+#         {'posts': posts}
+#     )
+    
 @login_required
 def feed(request):
 
@@ -89,12 +133,22 @@ def feed(request):
         flat=True
     )
 
+    # Tickets des abonnements + les miens
     tickets = Ticket.objects.filter(
         user__in=followed_users
+    ) | Ticket.objects.filter(
+        user=request.user
     )
 
+    # Reviews des abonnements
+    # + mes reviews
+    # + reviews faites sur mes tickets
     reviews = Review.objects.filter(
         user__in=followed_users
+    ) | Review.objects.filter(
+        user=request.user
+    ) | Review.objects.filter(
+        ticket__user=request.user
     )
 
     tickets = tickets.annotate(
@@ -122,8 +176,6 @@ def feed(request):
         'AppCritique/feed.html',
         {'posts': posts}
     )
-    
-
 # ======================================================
 # CREER TICKET
 # ======================================================
