@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+<!-- <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -22,6 +23,89 @@
         <form method="post" class="space-y-4">
 
             {% csrf_token %}
+
+             #Username 
+            <div>
+                <label class="block mb-1 text-white">
+                    Nom d'utilisateur
+                </label>
+
+                {{ form.username }}
+            </div>
+
+             #Email 
+            <div>
+                <label class="block mb-1 text-white">
+                    Email
+                </label>
+
+                {{ form.email }}
+            </div>
+
+            # Password 
+            <div>
+                <label class="block mb-1 text-white">
+                    Mot de passe
+                </label>
+
+                {{ form.password1 }}
+            </div>
+
+            # Confirm Password 
+            <div>
+                <label class="block mb-1 text-white">
+                    Confirmation
+                </label>
+
+                {{ form.password2 }}
+            </div>
+
+            <button type="submit"
+                class="w-full bg-indigo-500 hover:bg-indigo-400 py-2 rounded-md font-semibold text-white">
+
+                S'inscrire
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html> 
+-->
+
+{% extends 'AppCritique/base.html' %}
+
+{% block content %}
+
+<div class="flex min-h-screen items-center justify-center">
+
+    <div class="w-full max-w-sm bg-gray-800 rounded-2xl p-8 shadow-lg">
+
+        <h1 class="text-2xl font-bold text-center mb-6 text-white">
+            Créer un compte
+        </h1>
+
+        <!-- Affichage erreurs formulaire -->
+        {% if form.errors %}
+        <div class="bg-red-100 text-red-600 p-4 rounded mb-4">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+
+            {% csrf_token %}
+
+        <!-- Erreurs globales du formulaire -->
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 text-red-600 p-4 rounded mb-4">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
 
             <!-- Username -->
             <div>
@@ -59,11 +143,11 @@
                 {{ form.password2 }}
             </div>
 
-            <button type="submit"
-                class="w-full bg-indigo-500 hover:bg-indigo-400 py-2 rounded-md font-semibold text-white">
-
+            <button
+                type="submit"
+                class="w-full bg-indigo-500 hover:bg-indigo-400 py-2 rounded-md font-semibold text-white"
+            >
                 S'inscrire
-
             </button>
 
         </form>
@@ -72,5 +156,4 @@
 
 </div>
 
-</body>
-</html>
+{% endblock %}

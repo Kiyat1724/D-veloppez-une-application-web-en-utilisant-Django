@@ -18,6 +18,13 @@
 
     {% csrf_token %}
 
+    <!-- Erreurs globales du formulaire -->
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 text-red-600 p-4 rounded mb-4">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
     {{ form.as_p }}
 
     <button

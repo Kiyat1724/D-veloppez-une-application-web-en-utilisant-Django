@@ -10,6 +10,19 @@ Créer un ticket et une critique
 
     {% csrf_token %}
 
+     <!-- Erreurs générales -->
+    {% if ticket_form.non_field_errors %}
+    <div class="bg-red-100 text-red-600 p-4 rounded mb-4">
+        {{ ticket_form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {% if review_form.non_field_errors %}
+    <div class="bg-red-100 text-red-600 p-4 rounded mb-4">
+        {{ review_form.non_field_errors }}
+    </div>
+    {% endif %}
+    
     <h2 class="text-xl font-bold mb-4">
         Ticket
     </h2>

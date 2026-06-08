@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Ticket, Review, UserFollows  
+from .models import CustomUser, Ticket, Review, UserFollows
 
 
 # Register your models here.

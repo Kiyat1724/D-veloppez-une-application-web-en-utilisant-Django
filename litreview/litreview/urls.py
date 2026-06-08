@@ -54,24 +54,24 @@ urlpatterns = [
 
     path('ticket/create/', create_ticket, name='create_ticket'),
 
-    path('review/create/<int:ticket_id>/', create_review, 
+    path('review/create/<int:ticket_id>/', create_review,
          name='create_review_from_ticket'),
 
-    path('ticket-review/create/', create_ticket_review, 
+    path('ticket-review/create/', create_ticket_review,
          name='create_ticket_review'),
 
     path('posts/', posts, name='posts'),
 
-    path('ticket/update/<int:ticket_id>/', update_ticket, 
+    path('ticket/update/<int:ticket_id>/', update_ticket,
          name='update_ticket'),
 
-    path('review/update/<int:review_id>/', update_review, 
+    path('review/update/<int:review_id>/', update_review,
          name='update_review'),
 
-    path('ticket/delete/<int:ticket_id>/', delete_ticket, 
+    path('ticket/delete/<int:ticket_id>/', delete_ticket,
          name='delete_ticket'),
 
-    path('review/delete/<int:review_id>/',  delete_review, 
+    path('review/delete/<int:review_id>/',  delete_review,
          name='delete_review'),
 
     path('subscriptions/', subscriptions, name='subscriptions'),

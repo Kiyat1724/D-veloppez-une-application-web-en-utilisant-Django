@@ -26,7 +26,7 @@ class StyledFormMixin:
 # SIGNUP
 # ======================================================
 
-class SignupForm(UserCreationForm):  
+class SignupForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'password1', 'password2')
@@ -50,10 +50,10 @@ class SignupForm(UserCreationForm):
 
 # ======================================================
 # TICKET
-# ======================================================  
+# ======================================================
 
 
-class TicketForm(StyledFormMixin, forms.ModelForm):  
+class TicketForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = Ticket
         fields = ["title", "description", "image"]

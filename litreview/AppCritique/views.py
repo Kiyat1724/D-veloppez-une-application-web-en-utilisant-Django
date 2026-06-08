@@ -1,5 +1,6 @@
+
+from django.core.paginator import Paginator
 from itertools import chain
-from urllib import request
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -7,10 +8,13 @@ from django.contrib.auth.views import LoginView
 from django.db.models import CharField, Value
 from django.shortcuts import render, redirect
 
+from litreview.AppCritique.views import posts
 from .forms import SignupForm
 from .models import Ticket, Review, UserFollows, CustomUser
 from django.shortcuts import get_object_or_404
 from .forms import TicketForm, ReviewForm
+import logging
+logger = logging.getLogger(__name__)
 
 
 # ======================================================
@@ -30,7 +34,7 @@ def home(request):
 # ======================================================
 
 
-def signup(request): 
+def signup(request):
     if request.method == 'POST':
 
         form = SignupForm(request.POST)
@@ -43,7 +47,7 @@ def signup(request):
             return redirect('feed')
 
         else:
-            print(form.errors)  # 🔥 AJOUT IMPORTANT
+            logger.debug(form.errors)  # 🔥 AJOUT IMPORTANT
 
     else:
         form = SignupForm()
@@ -79,6 +83,87 @@ def logout_view(request):
 # ======================================================
 
 
+@login_required
+def feed(request):
+
+    followed_users = UserFollows.objects.filter(
+        user=request.user
+    ).values_list(
+        'followed_user',
+        flat=True
+    )
+
+    tickets = Ticket.objects.filter(
+        user__in=followed_users
+    )
+
+    reviews = Review.objects.filter(
+        user__in=followed_users
+    )
+
+    # tickets = tickets.annotate(
+    #     content_type=Value(
+    #         'TICKET',
+    #         CharField()
+    #     )
+    # )
+
+    # reviews = reviews.annotate(
+    #     content_type=Value(
+    #         'REVIEW',
+    #         CharField()
+    #     )
+    # )
+    # Tickets des abonnements + les miens
+    tickets = Ticket.objects.filter(
+        user__in=followed_users
+    ) | Ticket.objects.filter(
+        user=request.user
+    )
+
+    # Reviews des abonnements
+    # + mes reviews
+    # + reviews faites sur mes tickets
+    reviews = Review.objects.filter(
+        user__in=followed_users
+    ) | Review.objects.filter(
+        user=request.user
+    ) | Review.objects.filter(
+        ticket__user=request.user
+    )
+    # posts = sorted(
+    #     chain(tickets, reviews),
+    #     key=lambda post: post.time_created,
+    #     reverse=True
+    # )
+
+    # return render(
+    #     request,
+    #     'AppCritique/feed.html',
+    #     {'posts': posts}
+    # )
+
+    posts = sorted(
+    chain(tickets, reviews),
+    key=lambda post: post.time_created,
+    reverse=True
+)
+
+    # PAGINATION
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'AppCritique/feed.html',
+        {
+            'posts': page_obj,
+            'page_obj': page_obj
+        }
+    )
 # @login_required
 # def feed(request):
 
@@ -89,12 +174,22 @@ def logout_view(request):
 #         flat=True
 #     )
 
+#     # Tickets des abonnements + les miens
 #     tickets = Ticket.objects.filter(
 #         user__in=followed_users
+#     ) | Ticket.objects.filter(
+#         user=request.user
 #     )
 
+#     # Reviews des abonnements
+#     # + mes reviews
+#     # + reviews faites sur mes tickets
 #     reviews = Review.objects.filter(
 #         user__in=followed_users
+#     ) | Review.objects.filter(
+#         user=request.user
+#     ) | Review.objects.filter(
+#         ticket__user=request.user
 #     )
 
 #     tickets = tickets.annotate(
@@ -122,60 +217,6 @@ def logout_view(request):
 #         'AppCritique/feed.html',
 #         {'posts': posts}
 #     )
-    
-@login_required
-def feed(request):
-
-    followed_users = UserFollows.objects.filter(
-        user=request.user
-    ).values_list(
-        'followed_user',
-        flat=True
-    )
-
-    # Tickets des abonnements + les miens
-    tickets = Ticket.objects.filter(
-        user__in=followed_users
-    ) | Ticket.objects.filter(
-        user=request.user
-    )
-
-    # Reviews des abonnements
-    # + mes reviews
-    # + reviews faites sur mes tickets
-    reviews = Review.objects.filter(
-        user__in=followed_users
-    ) | Review.objects.filter(
-        user=request.user
-    ) | Review.objects.filter(
-        ticket__user=request.user
-    )
-
-    tickets = tickets.annotate(
-        content_type=Value(
-            'TICKET',
-            CharField()
-        )
-    )
-
-    reviews = reviews.annotate(
-        content_type=Value(
-            'REVIEW',
-            CharField()
-        )
-    )
-
-    posts = sorted(
-        chain(tickets, reviews),
-        key=lambda post: post.time_created,
-        reverse=True
-    )
-
-    return render(
-        request,
-        'AppCritique/feed.html',
-        {'posts': posts}
-    )
 # ======================================================
 # CREER TICKET
 # ======================================================
