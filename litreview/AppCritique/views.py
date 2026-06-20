@@ -8,7 +8,6 @@ from django.contrib.auth.views import LoginView
 from django.db.models import CharField, Value
 from django.shortcuts import render, redirect
 
-from litreview.AppCritique.views import posts
 from .forms import SignupForm
 from .models import Ticket, Review, UserFollows, CustomUser
 from django.shortcuts import get_object_or_404

@@ -29,11 +29,11 @@
 
     {% if post.image %}
 
-    <img
-        src="{{ post.image.url }}"
-        alt="Image ticket"
-        class="rounded-xl mb-6 max-h-96 object-cover"
-    >
+  <img
+    src="{{ post.image.url }}"
+    alt="{{ post.title }}"
+    class="rounded-xl mb-6 max-h-96 object-cover"
+>
 
     {% endif %}
 

@@ -1,4 +1,4 @@
-.env
+# .env
 pycache/
-media
-db.sqlite3
+# media
+# db.sqlite3
