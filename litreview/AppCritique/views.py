@@ -99,25 +99,14 @@ def feed(request):
     reviews = Review.objects.filter(
         user__in=followed_users
     )
-
-    # tickets = tickets.annotate(
-    #     content_type=Value(
-    #         'TICKET',
-    #         CharField()
-    #     )
-    # )
-
-    # reviews = reviews.annotate(
-    #     content_type=Value(
-    #         'REVIEW',
-    #         CharField()
-    #     )
-    # )
     # Tickets des abonnements + les miens
-    tickets = Ticket.objects.filter(
+    tickets = (
+     Ticket.objects.filter(
         user__in=followed_users
-    ) | Ticket.objects.filter(
+     ).annotate(content_type=Value('TICKET', output_field=CharField())) |
+     Ticket.objects.filter(
         user=request.user
+     ).annotate(content_type=Value('TICKET', output_field=CharField()))
     )
 
     # Reviews des abonnements
@@ -125,11 +114,11 @@ def feed(request):
     # + reviews faites sur mes tickets
     reviews = Review.objects.filter(
         user__in=followed_users
-    ) | Review.objects.filter(
+    ).annotate(content_type=Value('REVIEW', output_field=CharField())) | Review.objects.filter(
         user=request.user
-    ) | Review.objects.filter(
+    ).annotate(content_type=Value('REVIEW', output_field=CharField())) | Review.objects.filter(
         ticket__user=request.user
-    )
+    ).annotate(content_type=Value('REVIEW', output_field=CharField()))
     # posts = sorted(
     #     chain(tickets, reviews),
     #     key=lambda post: post.time_created,
