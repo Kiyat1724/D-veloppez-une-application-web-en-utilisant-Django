@@ -33,7 +33,6 @@ class SignupForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         for field in self.fields.values():
             field.widget.attrs.update({
                 "class": "w-full p-2 rounded-md text-black bg-white"
@@ -42,10 +41,8 @@ class SignupForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data.get("email")
-
         if commit:
             user.save()
-
         return user
 
 # ======================================================
@@ -69,13 +66,10 @@ class TicketForm(StyledFormMixin, forms.ModelForm):
         )
 
         if image:
-
             if image.size > 5 * 1024 * 1024:
-
                 raise forms.ValidationError(
                     "L'image ne doit pas dépasser 5 MB."
                 )
-
         return image
 
 # ======================================================

@@ -113,7 +113,7 @@ django-admin startproject litreview
 Par la suite, on se position dans le projet en tappant la commande : ```bash  cd litreview``` et crée l'application Django
 
 ```bash
-python manage.py startapp Appcritique
+python manage.py startapp AppCritique
 
 ```
 L'application va ensuite être rajouter dans le fichier settings.py

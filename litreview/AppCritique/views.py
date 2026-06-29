@@ -21,12 +21,10 @@ logger = logging.getLogger(__name__)
 # ======================================================
 
 def home(request):
-
     return render(
         request,
         'AppCritique/home.html'
     )
-
 
 # ======================================================
 # INSCRIPTION
@@ -35,22 +33,15 @@ def home(request):
 
 def signup(request):
     if request.method == 'POST':
-
         form = SignupForm(request.POST)
-
         if form.is_valid():
-
             user = form.save()
             login(request, user)
-
             return redirect('feed')
-
         else:
-            logger.debug(form.errors)  # 🔥 AJOUT IMPORTANT
-
+            logger.debug(form.errors)  
     else:
         form = SignupForm()
-
     return render(
         request,
         'AppCritique/signup.html',
@@ -60,27 +51,20 @@ def signup(request):
 # CONNEXION
 # ======================================================
 
-
 class CustomLoginView(LoginView):
-
     template_name = 'AppCritique/login.html'
-
 
 # ======================================================
 # DECONNEXION
 # ======================================================
 
 def logout_view(request):
-
     logout(request)
-
     return redirect('login')
-
 
 # ======================================================
 # FEED
 # ======================================================
-
 
 @login_required
 def feed(request):
@@ -91,11 +75,9 @@ def feed(request):
         'followed_user',
         flat=True
     )
-
     tickets = Ticket.objects.filter(
         user__in=followed_users
     )
-
     reviews = Review.objects.filter(
         user__in=followed_users
     )
@@ -119,31 +101,16 @@ def feed(request):
     ).annotate(content_type=Value('REVIEW', output_field=CharField())) | Review.objects.filter(
         ticket__user=request.user
     ).annotate(content_type=Value('REVIEW', output_field=CharField()))
-    # posts = sorted(
-    #     chain(tickets, reviews),
-    #     key=lambda post: post.time_created,
-    #     reverse=True
-    # )
-
-    # return render(
-    #     request,
-    #     'AppCritique/feed.html',
-    #     {'posts': posts}
-    # )
-
     posts = sorted(
     chain(tickets, reviews),
     key=lambda post: post.time_created,
     reverse=True
 )
-
+    
     # PAGINATION
     paginator = Paginator(posts, 10)
-
     page_number = request.GET.get('page')
-
     page_obj = paginator.get_page(page_number)
-
     return render(
         request,
         'AppCritique/feed.html',
@@ -152,59 +119,7 @@ def feed(request):
             'page_obj': page_obj
         }
     )
-# @login_required
-# def feed(request):
 
-#     followed_users = UserFollows.objects.filter(
-#         user=request.user
-#     ).values_list(
-#         'followed_user',
-#         flat=True
-#     )
-
-#     # Tickets des abonnements + les miens
-#     tickets = Ticket.objects.filter(
-#         user__in=followed_users
-#     ) | Ticket.objects.filter(
-#         user=request.user
-#     )
-
-#     # Reviews des abonnements
-#     # + mes reviews
-#     # + reviews faites sur mes tickets
-#     reviews = Review.objects.filter(
-#         user__in=followed_users
-#     ) | Review.objects.filter(
-#         user=request.user
-#     ) | Review.objects.filter(
-#         ticket__user=request.user
-#     )
-
-#     tickets = tickets.annotate(
-#         content_type=Value(
-#             'TICKET',
-#             CharField()
-#         )
-#     )
-
-#     reviews = reviews.annotate(
-#         content_type=Value(
-#             'REVIEW',
-#             CharField()
-#         )
-#     )
-
-#     posts = sorted(
-#         chain(tickets, reviews),
-#         key=lambda post: post.time_created,
-#         reverse=True
-#     )
-
-#     return render(
-#         request,
-#         'AppCritique/feed.html',
-#         {'posts': posts}
-#     )
 # ======================================================
 # CREER TICKET
 # ======================================================
@@ -213,31 +128,22 @@ def feed(request):
 def create_ticket(request):
 
     form = TicketForm()
-
     if request.method == 'POST':
-
         form = TicketForm(
             request.POST,
             request.FILES
         )
-
         if form.is_valid():
-
             ticket = form.save(commit=False)
-
             ticket.user = request.user
-
             ticket.save()
             messages.success(request, 'Ticket créé avec succès !')
-
             return redirect('feed')
-
     return render(
         request,
         'AppCritique/create_ticket.html',
         {'form': form}
     )
-
 
 # ======================================================
 # CREER REVIEW
@@ -258,27 +164,17 @@ def create_review(request, ticket_id):
     ).exists()
 
     if existing_review:
-
         return redirect('feed')
-
     form = ReviewForm()
-
     if request.method == 'POST':
-
         form = ReviewForm(request.POST)
-
         if form.is_valid():
-
             review = form.save(commit=False)
-
             review.ticket = ticket
-
             review.user = request.user
-
             review.save()
             messages.success(request, 'Critique créée avec succès !')
             return redirect('feed')
-
     return render(
         request,
         'AppCritique/create_review.html',
@@ -297,16 +193,12 @@ def create_review(request, ticket_id):
 def create_ticket_review(request):
 
     ticket_form = TicketForm()
-
     review_form = ReviewForm()
-
     if request.method == 'POST':
-
         ticket_form = TicketForm(
             request.POST,
             request.FILES
         )
-
         review_form = ReviewForm(
             request.POST
         )
@@ -315,23 +207,17 @@ def create_ticket_review(request):
             ticket_form.is_valid()
             and review_form.is_valid()
         ):
-
             ticket = ticket_form.save(
                 commit=False
             )
-
             ticket.user = request.user
-
             ticket.save()
-
             review = review_form.save(
                 commit=False
             )
 
             review.ticket = ticket
-
             review.user = request.user
-
             review.save()
             messages.success(request, 'Ticket et critique créés avec succès !')
             return redirect('feed')
@@ -352,41 +238,34 @@ def create_ticket_review(request):
 
 @login_required
 def posts(request):
-
     tickets = Ticket.objects.filter(
         user=request.user
     )
-
     reviews = Review.objects.filter(
         user=request.user
     )
-
     tickets = tickets.annotate(
         content_type=Value(
             'TICKET',
             CharField()
         )
     )
-
     reviews = reviews.annotate(
         content_type=Value(
             'REVIEW',
             CharField()
         )
     )
-
     posts = sorted(
         chain(tickets, reviews),
         key=lambda post: post.time_created,
         reverse=True
     )
-
     return render(
         request,
         'AppCritique/posts.html',
         {'posts': posts}
     )
-
 
 # ======================================================
 # MODIFIER TICKET
@@ -399,29 +278,22 @@ def update_ticket(request, ticket_id):
         Ticket,
         id=ticket_id
     )
-
     if ticket.user != request.user:
 
         return redirect('feed')
-
     form = TicketForm(
         instance=ticket
     )
-
     if request.method == 'POST':
-
         form = TicketForm(
             request.POST,
             request.FILES,
             instance=ticket
         )
-
         if form.is_valid():
             messages.success(request, 'Ticket modifié avec succès !')
             form.save()
-
             return redirect('posts')
-
     return render(
         request,
         'AppCritique/update_ticket.html',
@@ -430,41 +302,32 @@ def update_ticket(request, ticket_id):
         }
     )
 
-
 # ======================================================
 # MODIFIER REVIEW
 # ======================================================
 
 @login_required
 def update_review(request, review_id):
-
     review = get_object_or_404(
         Review,
         id=review_id
     )
-
     if review.user != request.user:
 
         return redirect('feed')
-
     form = ReviewForm(
         instance=review
     )
-
     if request.method == 'POST':
 
         form = ReviewForm(
             request.POST,
             instance=review
         )
-
         if form.is_valid():
-
             messages.success(request, 'Critique modifiée avec succès !')
             form.save()
-
             return redirect('posts')
-
     return render(
         request,
         'AppCritique/update_review.html',
@@ -473,7 +336,6 @@ def update_review(request, review_id):
             'ticket': review.ticket
         }
     )
-
 
 # ======================================================
 # SUPPRIMER TICKET
@@ -486,13 +348,10 @@ def delete_ticket(request, ticket_id):
         Ticket,
         id=ticket_id
     )
-
     if ticket.user == request.user:
-
         ticket.delete()
         messages.success(request, 'Ticket supprimé avec succès !')
     return redirect('posts')
-
 
 # ======================================================
 # SUPPRIMER REVIEW
@@ -500,44 +359,32 @@ def delete_ticket(request, ticket_id):
 
 @login_required
 def delete_review(request, review_id):
-
     review = get_object_or_404(
         Review,
         id=review_id
     )
-
     if review.user == request.user:
-
         review.delete()
         messages.success(request, 'Critique supprimée avec succès !')
     return redirect('posts')
-
 
 # ======================================================
 # ABONNEMENTS
 # ======================================================
 
-
 @login_required
 def subscriptions(request):
-
     if request.method == 'POST':
-
         username = request.POST.get(
             'followed_user'
         )
-
         # Vérifie que le champ n'est pas vide
         if username:
-
             username = username.strip()
-
             try:
-
                 followed_user = CustomUser.objects.get(
                     username=username
                 )
-
                 # Empêche de se suivre soi-même
                 if followed_user != request.user:
 
@@ -545,36 +392,29 @@ def subscriptions(request):
                         user=request.user,
                         followed_user=followed_user
                     )
-
                     messages.success(
                         request,
                         f'Vous suivez maintenant {username}'
                     )
-
                 else:
                     messages.error(
                         request,
                         "Vous ne pouvez pas vous suivre vous-même."
                     )
-
             except CustomUser.DoesNotExist:
-
                 messages.error(
                     request,
                     "Utilisateur introuvable."
                 )
-
         return redirect('subscriptions')
 
     # Recharge après ajout
     follows = UserFollows.objects.filter(
         user=request.user
     )
-
     followers = UserFollows.objects.filter(
         followed_user=request.user
     )
-
     return render(
         request,
         'AppCritique/subscriptions.html',
@@ -584,21 +424,16 @@ def subscriptions(request):
         }
     )
 
-
 # ======================================================
 # DESABONNER
 # ======================================================
 
 @login_required
 def unfollow_user(request, follow_id):
-
     follow = get_object_or_404(
         UserFollows,
         id=follow_id
     )
-
     if follow.user == request.user:
-
         follow.delete()
-
     return redirect('subscriptions')
